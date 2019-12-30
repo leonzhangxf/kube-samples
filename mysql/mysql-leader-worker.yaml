@@ -1,113 +1,9 @@
-# mysql pv
-# 本地测试用
-apiVersion: v1
-kind: PersistentVolume
-metadata:
-  name: mysql-pv-0
-  namespace: mysql
-  labels:
-    pv: mysql-pv-0
-spec:
-  hostPath:
-    path: /d/data/mysql/pv-0
-    type: DirectoryOrCreate
-
----
-
-# mysql pvc 0
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: data-mysql-0
-  namespace: mysql
-  labels:
-    pvc: data-mysql-0
-spec:
-  selector:
-    matchLabels:
-      pv: mysql-pv-0
-  storageClassName: hostPath
-  accessModes:
-    - "ReadWriteOnce"
-  resources:
-    requests:
-      storage: 10Gi
-
----
-
-apiVersion: v1
-kind: PersistentVolume
-metadata:
-  name: mysql-pv-1
-  namespace: mysql
-  labels:
-    pv: mysql-pv-1
-spec:
-  hostPath:
-    path: /d/data/mysql/pv-1
-    type: DirectoryOrCreate
-
----
-
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: data-mysql-1
-  namespace: mysql
-  labels:
-    pvc: data-mysql-1
-spec:
-  selector:
-    matchLabels:
-      pv: mysql-pv-1
-  storageClassName: hostPath
-  accessModes:
-    - "ReadWriteOnce"
-  resources:
-    requests:
-      storage: 10Gi
-
----
-
-apiVersion: v1
-kind: PersistentVolume
-metadata:
-  name: mysql-pv-2
-  namespace: mysql
-  labels:
-    pv: mysql-pv-2
-spec:
-  hostPath:
-    path: /d/data/mysql/pv-2
-    type: DirectoryOrCreate
-
----
-
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: data-mysql-2
-  namespace: mysql
-  labels:
-    pvc: data-mysql-2
-spec:
-  selector:
-    matchLabels:
-      pv: mysql-pv-2
-  storageClassName: hostPath
-  accessModes:
-    - "ReadWriteOnce"
-  resources:
-    requests:
-      storage: 10Gi
-
----
-
 # headless svc
 # 内部应用访问
-# mysql-0.mysql.mysql.svc.cluster.local master
-# mysql-1.mysql.mysql.svc.cluster.local follower
-# mysql-2.mysql.mysql.svc.cluster.local follower
+# leader 读写，worker 读
+# mysql-0.mysql.mysql.svc.cluster.local leader
+# mysql-1.mysql.mysql.svc.cluster.local worker
+# mysql-2.mysql.mysql.svc.cluster.local worker
 apiVersion: v1
 kind: Service
 metadata:
@@ -144,6 +40,7 @@ spec:
 
 ---
 
+# mysql config file
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -210,7 +107,8 @@ spec:
               mountPath: /mnt/config-map
         # 从节点拷贝基数据
         - name: clone-mysql
-          image: gcr.io/google-samples/xtrabackup:1.0
+          # image: gcr.io/google-samples/xtrabackup:1.0
+          image: ist0ne/xtrabackup:1.0
           command:
             - bash
             - "-c"

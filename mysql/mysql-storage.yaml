@@ -1,0 +1,119 @@
+# mysql pv
+# 本地测试用
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: mysql-pv-0
+  namespace: mysql
+  labels:
+    pv: mysql-pv-0
+spec:
+  storageClassName: "hostpath"
+  hostPath:
+    path: /host_mnt/d/data/mysql/pv-0
+    type: DirectoryOrCreate
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteOnce
+
+---
+
+# mysql pvc 0
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: data-mysql-0
+  namespace: mysql
+  labels:
+    pvc: data-mysql-0
+spec:
+  storageClassName: "hostpath"
+  selector:
+    matchLabels:
+      pv: mysql-pv-0
+  accessModes:
+    - "ReadWriteOnce"
+  resources:
+    requests:
+      storage: 10Gi
+
+---
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: mysql-pv-1
+  namespace: mysql
+  labels:
+    pv: mysql-pv-1
+spec:
+  storageClassName: "hostpath"
+  hostPath:
+    path: /host_mnt/d/data/mysql/pv-1
+    type: DirectoryOrCreate
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteOnce
+
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: data-mysql-1
+  namespace: mysql
+  labels:
+    pvc: data-mysql-1
+spec:
+  storageClassName: "hostpath"
+  selector:
+    matchLabels:
+      pv: mysql-pv-1
+  accessModes:
+    - "ReadWriteOnce"
+  resources:
+    requests:
+      storage: 10Gi
+
+---
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: mysql-pv-2
+  namespace: mysql
+  labels:
+    pv: mysql-pv-2
+spec:
+  storageClassName: "hostpath"
+  hostPath:
+    path: /host_mnt/d/data/mysql/pv-2
+    type: DirectoryOrCreate
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteOnce
+
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: data-mysql-2
+  namespace: mysql
+  labels:
+    pvc: data-mysql-2
+spec:
+  storageClassName: "hostpath"
+  selector:
+    matchLabels:
+      pv: mysql-pv-2
+  accessModes:
+    - "ReadWriteOnce"
+  resources:
+    requests:
+      storage: 10Gi
+
+---

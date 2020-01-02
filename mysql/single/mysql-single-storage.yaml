@@ -18,7 +18,7 @@ metadata:
   labels:
     name: mysql-single-pv
 spec:
-  storageClassName: "mysql-single"
+  storageClassName: mysql-single
   hostPath:
     path: /host_mnt/d/data/mysql/mysql-single-pv
     type: DirectoryOrCreate
@@ -36,7 +36,7 @@ metadata:
   name: mysql-single-pvc
   namespace: mysql
 spec:
-  storageClassName: "mysql-single"
+  storageClassName: mysql-single
   selector:
     matchLabels:
       name: mysql-single-pv

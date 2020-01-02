@@ -14,6 +14,7 @@ spec:
       labels:
         app: mysql-single
     spec:
+      serviceAccountName: mysql-single-account
       containers:
         - name: mysql-single
           image: mysql:5.7

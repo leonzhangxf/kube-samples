@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql-single-conf
+  namespace: mysql
+data:
+  mysql-single.cnf: |
+    [mysqld]
+    server-id=1
+    log-bin
+
+---
+
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mysql-single-secret
+  namespace: mysql
+data:
+  # root
+  mysql-root-pwd: cm9vdA==

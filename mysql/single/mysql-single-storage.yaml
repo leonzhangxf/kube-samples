@@ -1,0 +1,36 @@
+# pv
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: mysql-single-pv
+  namespace: mysql
+  labels:
+    name: mysql-single-pv
+spec:
+  storageClassName: "mysql-single"
+  hostPath:
+    path: /host_mnt/d/data/mysql/mysql-single-pv
+    type: DirectoryOrCreate
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteOnce
+
+---
+
+# pvc
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mysql-single-pvc
+  namespace: mysql
+spec:
+  storageClassName: "mysql-single"
+  selector:
+    matchLabels:
+      name: mysql-single-pv
+  accessModes:
+    - "ReadWriteOnce"
+  resources:
+    requests:
+      storage: 10Gi

@@ -1,0 +1,81 @@
+# deploy
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql-single
+  namespace: mysql
+spec:
+  selector:
+    matchLabels:
+      app: mysql-single
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: mysql-single
+    spec:
+      containers:
+        - name: mysql-single
+          image: mysql:5.7
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-single-secret
+                  key: mysql-root-pwd
+          ports:
+            - name: mysql
+              containerPort: 3306
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/mysql
+            - name: conf
+              mountPath: /etc/mysql/conf.d
+          resources:
+            requests:
+              cpu: 500m
+              memory: 1Gi
+          livenessProbe:
+            exec:
+              command:
+                - /bin/sh
+                - "-c"
+                - MYSQL_PWD="${MYSQL_ROOT_PASSWORD}"
+                - mysql -h 127.0.0.1 -u root -e "SELECT 1"
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+          readinessProbe:
+            exec:
+              command:
+                - /bin/sh
+                - "-c"
+                - MYSQL_PWD="${MYSQL_ROOT_PASSWORD}"
+                - mysql -h 127.0.0.1 -u root -e "SELECT 1"
+            initialDelaySeconds: 5
+            periodSeconds: 2
+            timeoutSeconds: 1
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: mysql-single-pvc
+        - name: conf
+          configMap:
+            name: mysql-single-conf
+
+---
+
+# svc
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-single-svc
+  namespace: mysql
+spec:
+  type: NodePort
+  selector:
+    app: mysql-single
+  ports:
+    - port: 3306
+      nodePort: 30306
+      protocol: TCP
